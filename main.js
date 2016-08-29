@@ -93,4 +93,7 @@ function draw() {
 
     // Now we have lines joining all points 1-2-3-4
     gl.drawArrays(gl.LINE_STRIP, 0, 4);
+
+    // Now we have a loop of lines joining all points 1-2-3-4-1
+    gl.drawArrays(gl.LINE_LOOP, 0, 4);
 }
