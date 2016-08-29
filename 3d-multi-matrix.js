@@ -1,7 +1,7 @@
 // Vertices & Shaders (GLSL)
 // https://material.google.com/style/color.html#color-color-palette
 
-var gl, shaderProgram, vertices, angle = 0;
+var gl, shaderProgram, vertices;
 var matrix = mat4.create();
 var DIMENSIONS = 3, VERTEX_COUNT = 30;
 
@@ -12,113 +12,6 @@ draw();
 
 // OpenGL matrices are in column-major order
 // When doing math, remember to transpose the following matrices
-/*
-ROT_X_MAT = [
-    1,    0,   0, 0,
-    0,  cos, sin, 0,
-    0, -sin, cos, 0,
-    0,    0,   0, 1
-];
-
-ROT_Y_MAT = [
-    cos, 0, -sin, 0,
-      0, 1,    0, 0,
-    sin, 0,  cos, 0,
-      0, 0,    0, 1
-];
-
-ROT_Z_MAT = [
-     cos, sin, 0, 0,
-    -sin, cos, 0, 0,
-       0, 0,   1, 0,
-       0, 0,   0, 1
-];
-
-SCALE_MAT = [
-    Sx,  0,  0, 0,
-     0, Sy,  0, 0,
-     0,  0, Sz, 0,
-     0,  0,  0, 1
-];
-
-TRANS_MAT = [
-     1,  0,  0, 0,
-     0,  1,  0, 0,
-     0,  0,  1, 0,
-    Tx, Ty, Tz, 1
-];
-*/
-
-function rotateX(angle) {
-    var cos = Math.cos(angle),
-        sin = Math.sin(angle),
-        matrix = new Float32Array([
-        1,    0,   0, 0,
-        0,  cos, sin, 0,
-        0, -sin, cos, 0,
-        0,    0,   0, 1
-    ]);
-    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    // The 2nd param is boolean that asks whether we want to transpose the matrix
-    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
-    gl.uniformMatrix4fv(transformMatrix, false, matrix);
-}
-
-function rotateY(angle) {
-    var cos = Math.cos(angle),
-        sin = Math.sin(angle),
-        matrix = new Float32Array([
-        cos, 0, -sin, 0,
-          0, 1,    0, 0,
-        sin, 0,  cos, 0,
-          0, 0,    0, 1
-    ]);
-    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    // The 2nd param is boolean that asks whether we want to transpose the matrix
-    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
-    gl.uniformMatrix4fv(transformMatrix, false, matrix);
-}
-
-function rotateZ(angle) {
-    var cos = Math.cos(angle),
-        sin = Math.sin(angle),
-        matrix = new Float32Array([
-         cos, sin, 0, 0,
-        -sin, cos, 0, 0,
-           0, 0,   1, 0,
-           0, 0,   0, 1
-    ]);
-    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    // The 2nd param is boolean that asks whether we want to transpose the matrix
-    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
-    gl.uniformMatrix4fv(transformMatrix, false, matrix);
-}
-
-function scale(Sx, Sy, Sz) {
-    var matrix = new Float32Array([
-        Sx,  0,  0, 0,
-         0, Sy,  0, 0,
-         0,  0, Sz, 0,
-         0,  0,  0, 1
-    ]);
-    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    // The 2nd param is boolean that asks whether we want to transpose the matrix
-    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
-    gl.uniformMatrix4fv(transformMatrix, false, matrix);
-}
-
-function translate(Tx, Ty, Tz) {
-    var matrix = new Float32Array([
-         1,  0,  0, 0,
-         0,  1,  0, 0,
-         0,  0,  1, 0,
-        Tx, Ty, Tz, 1
-    ]);
-    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    // The 2nd param is boolean that asks whether we want to transpose the matrix
-    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
-    gl.uniformMatrix4fv(transformMatrix, false, matrix);
-}
 
 function initGL() {
     var canvas = document.getElementById("canvas");
@@ -183,11 +76,13 @@ function createShaders() {
 }
 
 function createVertices() {
-    vertices = [
-         0.0,  0.8, 0.0,
-         0.8, -0.8, 0.0,
-        -0.8, -0.8, 0.0,
-    ];
+    vertices = [];
+
+    for (var i = 0; i < VERTEX_COUNT; ++i) {
+        vertices.push(Math.random() * 2 - 1);
+        vertices.push(Math.random() * 2 - 1);
+        vertices.push(Math.random() * 2 - 1);
+    }
 
     var buffer = gl.createBuffer();
     // Array buffer because vertices is an array
@@ -212,11 +107,12 @@ function createVertices() {
 }
 
 function draw() {
-    angle += 0.01;
-
-    //rotateX(angle);
-    rotateY(angle);
-    //rotateZ(angle);
+    // rotateZ: Dst matrix, Src matrix, angle
+    mat4.rotateX(matrix, matrix, 0.005);
+    mat4.rotateZ(matrix, matrix, 0.01);
+    mat4.rotateY(matrix, matrix, 0.02);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -239,7 +135,8 @@ function draw() {
 
     // Draw triangles for sequential groups of 3 points and fill
     // The remaining 1 or 2 points will have no connection
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    //gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.drawArrays(gl.TRIANGLES, 0, VERTEX_COUNT);
 
     // Request to redraw again and again, thus creating an animation
     // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
