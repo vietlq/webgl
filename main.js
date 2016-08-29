@@ -3,14 +3,30 @@
 
 var gl, shaderProgram, vertices;
 var DIMENSIONS = 2, VERTEX_COUNT = 5000;
+var MIN_DIST = 0.1;
+// If we set mouseX or mouseY to 0, the circle with radius MIN_DIST in the center will be empty
+var mouseX = 2, mouseY = 2;
 
 initGL();
 createShaders();
 createVertices();
 draw();
 
+function mapOrdinate(value, minSrc, maxSrc, minDst, maxDst) {
+    return (value - minSrc) / (maxSrc - minSrc) * (maxDst - minDst) + minDst;
+}
+
 function initGL() {
     var canvas = document.getElementById("canvas");
+
+    // Add canvas event listener
+    canvas.addEventListener('mousemove', function() {
+        // For X the direction in WebGL from -1 to 1 is the same as for the screen
+        mouseX = mapOrdinate(event.clientX, 0, canvas.width, -1, 1);
+        // For Y the direction in WebGL from -1 to 1 is reversed compared to the screen
+        mouseY = mapOrdinate(event.clientY, 0, canvas.height, 1, -1);
+    });
+
     gl = canvas.getContext("webgl");
     //gl = canvas.getContext("experimental-webgl");
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -102,9 +118,20 @@ function createVertices() {
 
 function draw() {
     for (var i = 0; i < VERTEX_COUNT; ++i) {
-        vertices[2*i] += Math.random() * 0.01 - 0.005;
-        vertices[2*i + 1] += Math.random() * 0.01 - 0.005;
+        var dx = vertices[2*i] - mouseX,
+            dy = vertices[2*i + 1] - mouseY,
+            dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Move the point away from the mouse
+        if (dist < MIN_DIST) {
+            vertices[2*i] += mouseX + dx / dist * MIN_DIST;
+            vertices[2*i + 1] += mouseY + dy / dist * MIN_DIST;
+        } else {
+            vertices[2*i] += Math.random() * 0.01 - 0.005;
+            vertices[2*i + 1] += Math.random() * 0.01 - 0.005;
+        }
     }
+
     // gl.bufferSubData allows updating a subset of data when needed
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
 
