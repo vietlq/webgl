@@ -81,14 +81,16 @@ function createVertices() {
     var buffer = gl.createBuffer();
     // Array buffer because vertices is an array
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    // gl.STATIC_DRAW meant for rarely changed drawing
+    // gl.DYNAMIC_DRAW is efficient for frequently changed drawing
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
 
     var coords = gl.getAttribLocation(shaderProgram, "coords");
     //gl.vertexAttrib3f(coords, 0, .5, 0);
     // We will pass a pointer whose elements are organised in block of DIMENSIONS floats
     gl.vertexAttribPointer(coords, DIMENSIONS, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(coords);
-    // Unbind the buffer
+    // Always unbind the buffer. Unbiding omitted only for naive implementation
     //gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     var pointSize = gl.getAttribLocation(shaderProgram, "pointSize");
