@@ -54,10 +54,16 @@ function createShaders() {
 function createVertices() {
     // Each vertex has coordinates (x, y, z)
     vertices = [
-        -0.8, -0.8, 0.0,
-         0.8, -0.8, 0.0,
-         0.0,  0.8, 0.0,
-         0.4,  0.4, 0.0
+        -0.2, -0.2, 0.0,
+         0.2, -0.2, 0.0,
+         0.3,  0.2, 0.0,
+         0.1,  0.5, 0.0,
+        -0.9,  0.7, 0.0,
+         0.6,  0.8, 0.0,
+        -0.8, -0.3, 0.0,
+         0.9,  0.3, 0.0,
+         0.7, -0.5, 0.0,
+         0.3, -0.7, 0.0,
     ];
 
     var buffer = gl.createBuffer();
@@ -73,7 +79,7 @@ function createVertices() {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     var pointSize = gl.getAttribLocation(shaderProgram, "pointSize");
-    gl.vertexAttrib1f(pointSize, 30);
+    gl.vertexAttrib1f(pointSize, 10);
 
     var color = gl.getUniformLocation(shaderProgram, "color");
     gl.uniform4f(color, 1, 1, 0, 1);
@@ -94,10 +100,10 @@ function draw() {
     //gl.drawArrays(gl.LINES, 0, 4);
 
     // Now we have lines joining all points 1-2-3-4
-    //gl.drawArrays(gl.LINE_STRIP, 0, 4);
+    gl.drawArrays(gl.LINE_STRIP, 2, 4);
 
     // Now we have a loop of lines joining all points 1-2-3-4-1
-    //gl.drawArrays(gl.LINE_LOOP, 0, 4);
+    gl.drawArrays(gl.LINE_LOOP, 6, 4);
 
     // Draw triangles for sequential groups of 3 points and fill
     // The remaining 1 or 2 points will have no connection
