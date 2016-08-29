@@ -105,7 +105,7 @@ function draw() {
         vertices[2*i] += Math.random() * 0.01 - 0.005;
         vertices[2*i + 1] += Math.random() * 0.01 - 0.005;
     }
-    // Buffer the data to draw
+    // gl.bufferSubData allows updating a subset of data when needed
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
 
     gl.clear(gl.COLOR_BUFFER_BIT);
