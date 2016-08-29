@@ -52,11 +52,11 @@ function rotateX(angle) {
     var cos = Math.cos(angle),
         sin = Math.sin(angle),
         matrix = new Float32Array([
-            1,    0,   0, 0,
-            0,  cos, sin, 0,
-            0, -sin, cos, 0,
-            0,    0,   0, 1
-        ]);
+        1,    0,   0, 0,
+        0,  cos, sin, 0,
+        0, -sin, cos, 0,
+        0,    0,   0, 1
+    ]);
     var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     // The 2nd param is boolean that asks whether we want to transpose the matrix
     // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
@@ -67,11 +67,11 @@ function rotateY(angle) {
     var cos = Math.cos(angle),
         sin = Math.sin(angle),
         matrix = new Float32Array([
-            cos, 0, -sin, 0,
-              0, 1,    0, 0,
-            sin, 0,  cos, 0,
-              0, 0,    0, 1
-        ]);
+        cos, 0, -sin, 0,
+          0, 1,    0, 0,
+        sin, 0,  cos, 0,
+          0, 0,    0, 1
+    ]);
     var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     // The 2nd param is boolean that asks whether we want to transpose the matrix
     // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
@@ -82,11 +82,11 @@ function rotateZ(angle) {
     var cos = Math.cos(angle),
         sin = Math.sin(angle),
         matrix = new Float32Array([
-             cos, sin, 0, 0,
-            -sin, cos, 0, 0,
-               0, 0,   1, 0,
-               0, 0,   0, 1
-        ]);
+         cos, sin, 0, 0,
+        -sin, cos, 0, 0,
+           0, 0,   1, 0,
+           0, 0,   0, 1
+    ]);
     var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     // The 2nd param is boolean that asks whether we want to transpose the matrix
     // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
@@ -94,14 +94,12 @@ function rotateZ(angle) {
 }
 
 function scale(Sx, Sy, Sz) {
-    var cos = Math.cos(angle),
-        sin = Math.sin(angle),
-        matrix = new Float32Array([
-            Sx,  0,  0, 0,
-             0, Sy,  0, 0,
-             0,  0, Sz, 0,
-             0,  0,  0, 1
-        ]);
+    var matrix = new Float32Array([
+        Sx,  0,  0, 0,
+         0, Sy,  0, 0,
+         0,  0, Sz, 0,
+         0,  0,  0, 1
+    ]);
     var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     // The 2nd param is boolean that asks whether we want to transpose the matrix
     // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
@@ -109,14 +107,12 @@ function scale(Sx, Sy, Sz) {
 }
 
 function translate(Tx, Ty, Tz) {
-    var cos = Math.cos(angle),
-        sin = Math.sin(angle),
-        matrix = new Float32Array([
-             1,  0,  0, 0,
-             0,  1,  0, 0,
-             0,  0,  1, 0,
-            Tx, Ty, Tz, 1
-        ]);
+    var matrix = new Float32Array([
+         1,  0,  0, 0,
+         0,  1,  0, 0,
+         0,  0,  1, 0,
+        Tx, Ty, Tz, 1
+    ]);
     var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     // The 2nd param is boolean that asks whether we want to transpose the matrix
     // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
