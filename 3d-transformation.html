@@ -10,8 +10,10 @@
     <script id="shader-vs" type="x-shader/x-vertex">
         attribute vec4 coords;
         attribute float pointSize;
+        // Uniform because all vertices are transformed by the same matrices
+        uniform mat4 transformMatrix;
         void main(void) {
-            gl_Position = coords;
+            gl_Position = transformMatrix * coords;
             gl_PointSize = pointSize;
         }
     </script>

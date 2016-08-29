@@ -1,16 +1,127 @@
 // Vertices & Shaders (GLSL)
 // https://material.google.com/style/color.html#color-color-palette
 
-var gl, shaderProgram, vertices;
-var DIMENSIONS = 2, VERTEX_COUNT = 5000;
-var MIN_DIST = 0.1;
-// If we set mouseX or mouseY to 0, the circle with radius MIN_DIST in the center will be empty
-var mouseX = 2, mouseY = 2;
+var gl, shaderProgram, vertices, angle = 0;
+var DIMENSIONS = 3;
 
 initGL();
 createShaders();
 createVertices();
 draw();
+
+// OpenGL matrices are in column-major order
+// When doing math, remember to transpose the following matrices
+/*
+ROT_X_MAT = [
+    1,    0,   0, 0,
+    0,  cos, sin, 0,
+    0, -sin, cos, 0,
+    0,    0,   0, 1
+];
+
+ROT_Y_MAT = [
+    cos, 0, -sin, 0,
+      0, 1,    0, 0,
+    sin, 0,  cos, 0,
+      0, 0,    0, 1
+];
+
+ROT_Z_MAT = [
+     cos, sin, 0, 0,
+    -sin, cos, 0, 0,
+       0, 0,   1, 0,
+       0, 0,   0, 1
+];
+
+SCALE_MAT = [
+    Sx,  0,  0, 0,
+     0, Sy,  0, 0,
+     0,  0, Sz, 0,
+     0,  0,  0, 1
+];
+
+TRANS_MAT = [
+     1,  0,  0, 0,
+     0,  1,  0, 0,
+     0,  0,  1, 0,
+    Tx, Ty, Tz, 1
+];
+*/
+
+function rotateX(angle) {
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle),
+        matrix = new Float32Array([
+            1,    0,   0, 0,
+            0,  cos, sin, 0,
+            0, -sin, cos, 0,
+            0,    0,   0, 1
+        ]);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    // The 2nd param is boolean that asks whether we want to transpose the matrix
+    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
+}
+
+function rotateY(angle) {
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle),
+        matrix = new Float32Array([
+            cos, 0, -sin, 0,
+              0, 1,    0, 0,
+            sin, 0,  cos, 0,
+              0, 0,    0, 1
+        ]);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    // The 2nd param is boolean that asks whether we want to transpose the matrix
+    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
+}
+
+function rotateZ(angle) {
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle),
+        matrix = new Float32Array([
+             cos, sin, 0, 0,
+            -sin, cos, 0, 0,
+               0, 0,   1, 0,
+               0, 0,   0, 1
+        ]);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    // The 2nd param is boolean that asks whether we want to transpose the matrix
+    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
+}
+
+function scale(Sx, Sy, Sz) {
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle),
+        matrix = new Float32Array([
+            Sx,  0,  0, 0,
+             0, Sy,  0, 0,
+             0,  0, Sz, 0,
+             0,  0,  0, 1
+        ]);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    // The 2nd param is boolean that asks whether we want to transpose the matrix
+    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
+}
+
+function translate(Tx, Ty, Tz) {
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle),
+        matrix = new Float32Array([
+             1,  0,  0, 0,
+             0,  1,  0, 0,
+             0,  0,  1, 0,
+            Tx, Ty, Tz, 1
+        ]);
+    var transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    // The 2nd param is boolean that asks whether we want to transpose the matrix
+    // However it does not do anythingin WebGL, so we have to transpose matrices ourselves
+    gl.uniformMatrix4fv(transformMatrix, false, matrix);
+}
 
 function mapOrdinate(value, minSrc, maxSrc, minDst, maxDst) {
     return (value - minSrc) / (maxSrc - minSrc) * (maxDst - minDst) + minDst;
@@ -87,12 +198,11 @@ function createShaders() {
 }
 
 function createVertices() {
-    vertices = [];
-    // Generate coordinates for vertices
-    for (var i = 0; i < VERTEX_COUNT; ++i) {
-        vertices.push(Math.random() * 2 - 1);
-        vertices.push(Math.random() * 2 - 1);
-    }
+    vertices = [
+         0.0,  0.8, 0.0,
+         0.8, -0.8, 0.0,
+        -0.8, -0.8, 0.0,
+    ];
 
     var buffer = gl.createBuffer();
     // Array buffer because vertices is an array
@@ -117,23 +227,11 @@ function createVertices() {
 }
 
 function draw() {
-    for (var i = 0; i < VERTEX_COUNT; ++i) {
-        var dx = vertices[2*i] - mouseX,
-            dy = vertices[2*i + 1] - mouseY,
-            dist = Math.sqrt(dx * dx + dy * dy);
+    angle += 0.01;
 
-        // Move the point away from the mouse
-        if (dist < MIN_DIST) {
-            vertices[2*i] += mouseX + dx / dist * MIN_DIST;
-            vertices[2*i + 1] += mouseY + dy / dist * MIN_DIST;
-        } else {
-            vertices[2*i] += Math.random() * 0.01 - 0.005;
-            vertices[2*i + 1] += Math.random() * 0.01 - 0.005;
-        }
-    }
-
-    // gl.bufferSubData allows updating a subset of data when needed
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
+    //rotateX(angle);
+    rotateY(angle);
+    //rotateZ(angle);
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -144,7 +242,6 @@ function draw() {
     // The 2nd param is the start index (offset) of the array to draw
     // The 3rd param is the number of points from the start index to draw
     //gl.drawArrays(gl.POINTS, 0, 4);
-    gl.drawArrays(gl.POINTS, 0, VERTEX_COUNT);
 
     // Now we have 2 lines joining 1st-2nd 3rd-4th (pairwise only)
     //gl.drawArrays(gl.LINES, 0, 4);
@@ -157,7 +254,7 @@ function draw() {
 
     // Draw triangles for sequential groups of 3 points and fill
     // The remaining 1 or 2 points will have no connection
-    //gl.drawArrays(gl.TRIANGLES, 0, 4);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     // Request to redraw again and again, thus creating an animation
     // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
