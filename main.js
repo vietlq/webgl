@@ -86,4 +86,5 @@ function draw() {
     //gl.drawArrays(gl.POINTS, 0, 1);
     // Now we have 3 points
     gl.drawArrays(gl.POINTS, 0, 4);
+    gl.drawArrays(gl.LINES, 0, 4);
 }
