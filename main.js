@@ -84,7 +84,13 @@ function draw() {
 
     // Offset, number of vertices
     //gl.drawArrays(gl.POINTS, 0, 1);
+
     // Now we have 3 points
     gl.drawArrays(gl.POINTS, 0, 4);
-    gl.drawArrays(gl.LINES, 0, 4);
+
+    // Now we have 2 lines joining 1st-2nd 3rd-4th (pairwise only)
+    //gl.drawArrays(gl.LINES, 0, 4);
+
+    // Now we have lines joining all points 1-2-3-4
+    gl.drawArrays(gl.LINE_STRIP, 0, 4);
 }
