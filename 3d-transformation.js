@@ -119,20 +119,8 @@ function translate(Tx, Ty, Tz) {
     gl.uniformMatrix4fv(transformMatrix, false, matrix);
 }
 
-function mapOrdinate(value, minSrc, maxSrc, minDst, maxDst) {
-    return (value - minSrc) / (maxSrc - minSrc) * (maxDst - minDst) + minDst;
-}
-
 function initGL() {
     var canvas = document.getElementById("canvas");
-
-    // Add canvas event listener
-    canvas.addEventListener('mousemove', function() {
-        // For X the direction in WebGL from -1 to 1 is the same as for the screen
-        mouseX = mapOrdinate(event.clientX, 0, canvas.width, -1, 1);
-        // For Y the direction in WebGL from -1 to 1 is reversed compared to the screen
-        mouseY = mapOrdinate(event.clientY, 0, canvas.height, 1, -1);
-    });
 
     gl = canvas.getContext("webgl");
     //gl = canvas.getContext("experimental-webgl");
