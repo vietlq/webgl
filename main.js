@@ -17,31 +17,49 @@ function initGL() {
     gl.clearColor(0.1, 0.6, 0.9, 1);
 }
 
-function createShaders() {
-    // Vertex Shader Source
-    var vs = "";
-    vs += "attribute vec4 coords;"
-    vs += "attribute float pointSize;"
-    vs += "void main(void) {";
-    vs += "    gl_Position = coords;";
-    vs += "    gl_PointSize = pointSize;";
-    vs += "}";
-    // Compile Vertex Shader
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, vs);
-    gl.compileShader(vertexShader);
+// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
+function getShader(gl, id, type) {
+    var shaderScript, theSource, currentChild, shader;
 
-    // Fragment Shader Source
-    var fs = "";
-    fs += "precision mediump float;"
-    fs += "uniform vec4 color;"
-    fs += "void main(void) {";
-    fs += "    gl_FragColor = color;";
-    fs += "}";
-    // Compile Fragment Shader
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, fs);
-    gl.compileShader(fragmentShader);
+    shaderScript = document.getElementById(id);
+
+    if (! shaderScript) {
+        return null;
+    }
+
+    theSource = shaderScript.text;
+    if (!type) {
+        if (shaderScript.type == "x-shader/x-fragment") {
+            type = gl.FRAGMENT_SHADER;
+        } else if (shaderScript.type == "x-shader/x-vertex") {
+            type = gl.VERTEX_SHADER;
+        } else {
+            // Unknown shader type
+            return null;
+        }
+    }
+
+    shader = gl.createShader(type);
+    gl.shaderSource(shader, theSource);
+
+    // Compile the shader program
+    gl.compileShader(shader);
+
+    // See if it compiled successfully
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+
+    return shader;
+}
+
+function createShaders() {
+    // Vertex Shader
+    var vertexShader = getShader(gl, "shader-vs");
+    // Fragment Shader
+    var fragmentShader = getShader(gl, "shader-fs");
 
     // Create Shader Program
     shaderProgram = gl.createProgram();
