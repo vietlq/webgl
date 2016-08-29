@@ -2,6 +2,7 @@
 // https://material.google.com/style/color.html#color-color-palette
 
 var gl, shaderProgram, vertices;
+var DIMENSIONS = 2, VERTEX_COUNT = 5000;
 
 initGL();
 createShaders();
@@ -70,19 +71,12 @@ function createShaders() {
 }
 
 function createVertices() {
-    // Each vertex has coordinates (x, y, z)
-    vertices = [
-        -0.2, -0.2, 0.0,
-         0.2, -0.2, 0.0,
-         0.3,  0.2, 0.0,
-         0.1,  0.5, 0.0,
-        -0.9,  0.7, 0.0,
-         0.6,  0.8, 0.0,
-        -0.8, -0.3, 0.0,
-         0.9,  0.3, 0.0,
-         0.7, -0.5, 0.0,
-         0.3, -0.7, 0.0,
-    ];
+    vertices = [];
+    // Generate coordinates for vertices
+    for (var i = 0; i < VERTEX_COUNT; ++i) {
+        vertices.push(Math.random() * 2 - 1);
+        vertices.push(Math.random() * 2 - 1);
+    }
 
     var buffer = gl.createBuffer();
     // Array buffer because vertices is an array
@@ -91,19 +85,27 @@ function createVertices() {
 
     var coords = gl.getAttribLocation(shaderProgram, "coords");
     //gl.vertexAttrib3f(coords, 0, .5, 0);
-    // We will pass a pointer whose elements are organised in block of 3 floats
-    gl.vertexAttribPointer(coords, 3, gl.FLOAT, false, 0, 0);
+    // We will pass a pointer whose elements are organised in block of DIMENSIONS floats
+    gl.vertexAttribPointer(coords, DIMENSIONS, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(coords);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    // Unbind the buffer
+    //gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     var pointSize = gl.getAttribLocation(shaderProgram, "pointSize");
-    gl.vertexAttrib1f(pointSize, 10);
+    gl.vertexAttrib1f(pointSize, 2);
 
     var color = gl.getUniformLocation(shaderProgram, "color");
     gl.uniform4f(color, 1, 1, 0, 1);
 }
 
 function draw() {
+    for (var i = 0; i < VERTEX_COUNT; ++i) {
+        vertices[2*i] += Math.random() * 0.01 - 0.005;
+        vertices[2*i + 1] += Math.random() * 0.01 - 0.005;
+    }
+    // Buffer the data to draw
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
+
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Offset, number of vertices
@@ -112,18 +114,23 @@ function draw() {
     // Now we have 3 points
     // The 2nd param is the start index (offset) of the array to draw
     // The 3rd param is the number of points from the start index to draw
-    gl.drawArrays(gl.POINTS, 0, 4);
+    //gl.drawArrays(gl.POINTS, 0, 4);
+    gl.drawArrays(gl.POINTS, 0, VERTEX_COUNT);
 
     // Now we have 2 lines joining 1st-2nd 3rd-4th (pairwise only)
     //gl.drawArrays(gl.LINES, 0, 4);
 
     // Now we have lines joining all points 1-2-3-4
-    gl.drawArrays(gl.LINE_STRIP, 2, 4);
+    //gl.drawArrays(gl.LINE_STRIP, 2, 4);
 
     // Now we have a loop of lines joining all points 1-2-3-4-1
-    gl.drawArrays(gl.LINE_LOOP, 6, 4);
+    //gl.drawArrays(gl.LINE_LOOP, 6, 4);
 
     // Draw triangles for sequential groups of 3 points and fill
     // The remaining 1 or 2 points will have no connection
-    gl.drawArrays(gl.TRIANGLES, 0, 4);
+    //gl.drawArrays(gl.TRIANGLES, 0, 4);
+
+    // Request to redraw again and again, thus creating an animation
+    // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+    window.requestAnimationFrame(draw);
 }
