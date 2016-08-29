@@ -52,10 +52,12 @@ function createShaders() {
 }
 
 function createVertices() {
+    // Each vertex has coordinates (x, y, z)
     vertices = [
         -0.8, -0.8, 0.0,
          0.8, -0.8, 0.0,
-         0.0,  0.8, 0.0
+         0.0,  0.8, 0.0,
+         0.4,  0.4, 0.0
     ];
 
     var buffer = gl.createBuffer();
@@ -83,5 +85,5 @@ function draw() {
     // Offset, number of vertices
     //gl.drawArrays(gl.POINTS, 0, 1);
     // Now we have 3 points
-    gl.drawArrays(gl.POINTS, 0, 3);
+    gl.drawArrays(gl.POINTS, 0, 4);
 }
