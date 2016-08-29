@@ -1,7 +1,7 @@
 // Vertices & Shaders (GLSL)
 // https://material.google.com/style/color.html#color-color-palette
 
-var gl, shaderProgram;
+var gl, shaderProgram, vertices;
 
 initGL();
 createShaders();
@@ -52,8 +52,23 @@ function createShaders() {
 }
 
 function createVertices() {
+    vertices = [
+        -0.8, -0.8, 0.0,
+         0.8, -0.8, 0.0,
+         0.0,  0.8, 0.0
+    ];
+
+    var buffer = gl.createBuffer();
+    // Array buffer because vertices is an array
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
     var coords = gl.getAttribLocation(shaderProgram, "coords");
-    gl.vertexAttrib3f(coords, 0, .5, 0);
+    //gl.vertexAttrib3f(coords, 0, .5, 0);
+    // We will pass a pointer whose elements are organised in block of 3 floats
+    gl.vertexAttribPointer(coords, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(coords);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     var pointSize = gl.getAttribLocation(shaderProgram, "pointSize");
     gl.vertexAttrib1f(pointSize, 30);
@@ -66,5 +81,7 @@ function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Offset, number of vertices
-    gl.drawArrays(gl.POINTS, 0, 1);
+    //gl.drawArrays(gl.POINTS, 0, 1);
+    // Now we have 3 points
+    gl.drawArrays(gl.POINTS, 0, 3);
 }
