@@ -5,3 +5,4 @@ Inspired by short & free course: https://egghead.io/lessons/javascript-passing-d
 More courses by Keith Peters: https://egghead.io/instructors/bit101
 
 Javascript Matrix and Vector library for High Performance WebGL apps: http://glmatrix.net/
+https://github.com/toji/gl-matrix

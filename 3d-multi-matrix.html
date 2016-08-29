@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>3D with JS &amp; WebGL</title>
+</head>
+    <canvas id="canvas" width="600" height="600"></canvas>
+
+    <script type="text/javascript" src="gl-matrix-min.js"></script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec4 coords;
+        attribute float pointSize;
+        // Uniform because all vertices are transformed by the same matrices
+        uniform mat4 transformMatrix;
+        void main(void) {
+            gl_Position = transformMatrix * coords;
+            gl_PointSize = pointSize;
+        }
+    </script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec4 color;
+        void main(void) {
+            gl_FragColor = color;
+        }
+    </script>
+
+    <script src="3d-multi-matrix.js"></script>
+<body>
+</body>
+</html>
