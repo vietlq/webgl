@@ -86,6 +86,8 @@ function draw() {
     //gl.drawArrays(gl.POINTS, 0, 1);
 
     // Now we have 3 points
+    // The 2nd param is the start index (offset) of the array to draw
+    // The 3rd param is the number of points from the start index to draw
     gl.drawArrays(gl.POINTS, 0, 4);
 
     // Now we have 2 lines joining 1st-2nd 3rd-4th (pairwise only)
@@ -97,7 +99,7 @@ function draw() {
     // Now we have a loop of lines joining all points 1-2-3-4-1
     //gl.drawArrays(gl.LINE_LOOP, 0, 4);
 
-    // Draw triangles for each group of 3 points and fill
+    // Draw triangles for sequential groups of 3 points and fill
     // The remaining 1 or 2 points will have no connection
     gl.drawArrays(gl.TRIANGLES, 0, 4);
 }
